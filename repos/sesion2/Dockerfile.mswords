@@ -1,21 +1,21 @@
-# Web
-FROM golang AS builder
+FROM ubuntu as builder
 
-WORKDIR /app
+WORKDIR /words
 
-COPY dispatcher.go ./
-COPY static ./static
+COPY pom.xml .
+COPY src src
 
-RUN CGO_ENABLED=0 go build dispatcher.go
+RUN apt-get update
+RUN apt-get install -y maven openjdk-8-jdk
+RUN mvn verify
 
-# Exec
-FROM alpine:latest AS production
+CMD ["mvn", "verify"]
 
-WORKDIR /
 
-COPY --from=builder /app/dispatcher /dispatcher
-COPY --from=builder /app/static /static
+FROM openjdk:8-jre-alpine
 
-ENTRYPOINT ["/dispatcher"]
+COPY --from=builder /words/target ./target
 
-EXPOSE 80
+CMD ["java","-Xmx8m", "-Xms8m", "-jar", "./target/words.jar"]
+
+EXPOSE 8080
