@@ -1,0 +1,21 @@
+version: "3"
+
+services:
+  www:
+    build: web
+    ports:
+      - ${PORT-80}:80
+    #user: nobody
+    #environment:
+    #  DEBUG: 1
+    #command: python counter.py
+    volumes:
+      - ./www:/static
+
+  dynamic:
+    build: words
+    ports:
+      - ${PORT-8080}80
+
+  postgre:
+    image: words_db
