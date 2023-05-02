@@ -1,0 +1,21 @@
+FROM ubuntu as builder
+
+WORKDIR /words
+
+COPY pom.xml .
+COPY src src
+
+RUN apt-get update
+RUN apt-get install -y maven openjdk-8-jdk
+RUN mvn verify
+
+CMD ["mvn", "verify"]
+
+
+FROM openjdk:8-jre-alpine
+
+COPY --from=builder /words/target ./target
+
+CMD ["java","-Xmx8m", "-Xms8m", "-jar", "./target/words.jar"]
+
+EXPOSE 8080

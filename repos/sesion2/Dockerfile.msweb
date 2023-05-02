@@ -1,0 +1,21 @@
+# Web
+FROM golang AS builder
+
+WORKDIR /app
+
+COPY dispatcher.go ./
+COPY static ./static
+
+RUN CGO_ENABLED=0 go build dispatcher.go
+
+# Exec
+FROM alpine:latest AS production
+
+WORKDIR /
+
+COPY --from=builder /app/dispatcher /dispatcher
+COPY --from=builder /app/static /static
+
+ENTRYPOINT ["/dispatcher"]
+
+EXPOSE 80

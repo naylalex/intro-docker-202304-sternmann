@@ -1,0 +1,17 @@
+version: "3"
+
+services:
+  www:
+    build: web
+    ports:
+      - ${PORT-80}:80
+    volumes:
+      - ./www:/static
+
+  dynamic:
+    build: words
+    ports:
+      - ${PORT-8080}:8080
+
+  postgre:
+    image: words_db
